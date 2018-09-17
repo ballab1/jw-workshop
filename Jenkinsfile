@@ -9,7 +9,7 @@ pipeline {
     stage('Docker Build') {
       steps {
         container('docker'){
-          sh 'docker build -t dillson/jw-workshop:latest .'
+          sh 'docker build -t ballab1/jw-workshop:latest .'
         }
       }
     }
@@ -18,7 +18,7 @@ pipeline {
         container('docker'){
           withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
             sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-            sh 'docker push dillson/jw-workshop:latest'
+            sh 'docker push ballab1/jw-workshop:latest'
           }
         }
       }
@@ -29,12 +29,12 @@ pipeline {
           withCredentials([usernamePassword(credentialsId: 'VCS', usernameVariable: 'orgID', passwordVariable: 'apiToken')]) {
             sh "vke account login -t ${env.orgID} -r ${env.apiToken}"
             sh '''
-                 vke cluster merge-kubectl-auth cb-test-59
-		 kubectl delete namespace jw-workshop || true
+                 vke cluster merge-kubectl-auth ballab1
+                 kubectl delete namespace jw-workshop || true
                  sleep 5
                  kubectl create namespace jw-workshop
-		 kubectl create -n jw-workshop -f deployFiles/deployment.yaml
-		 kubectl create -n jw-workshop -f deployFiles/service.yaml
+                 kubectl create -n jw-workshop -f deployFiles/deployment.yaml
+                 kubectl create -n jw-workshop -f deployFiles/service.yaml
                  echo "Node Server Launched!"
             '''
           }
